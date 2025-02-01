@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .header {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        .input-box {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            resize: none;
+            color: #1f1c2c;
+        }
+        .submit-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+        .prediction {
+            font-size: 22px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+        .fake {
+            background-color: #ff6f61;
+            color: white;
+        }
+        .real {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">🚨 Fake News Detector 🚨</div>
+        <div class="header">🔍 Paste a news article below to check if it's real or fake. Stay informed, stay safe! 🔍</div>
+        <textarea class="input-box" id="input-text" placeholder="Paste your news article here..."></textarea>
+        <button class="submit-button" onclick="predict()">Predict</button>
+        <div class="prediction" id="prediction-result"></div>
+    </div>
+
+    <script>
+        async function predict() {
+            const inputText = document.getElementById("input-text").value;
+            if (!inputText) {
+                document.getElementById("prediction-result").innerText = "⚠️ Please paste a news article to predict! ⚠️";
+                return;
+            }
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text: inputText }),
+            });
+
+            const result = await response.json();
+            const predictionResult = document.getElementById("prediction-result");
+            if (result.prediction === 1) {
+                predictionResult.innerText = "🚩 The News is Fake! 🚩";
+                predictionResult.className = "prediction fake";
+            } else {
+                predictionResult.innerText = "✅ The News is Real! ✅";
+                predictionResult.className = "prediction real";
+            }
+        }
+    </script>
+</body>
+</html>
